@@ -10,8 +10,8 @@ const PopupProvider = (props) => {
   const {
     children,
     defaultTransitionDuration = TRANSITION_DURATION,
-    onShowing = () => {},
-    onHiding = () => {},
+    onShow = () => {},
+    onHide = () => {},
   } = props;
   const refPopup = useRef();
   const id = `popup_${Date.now()}_${Math.ceil(Math.random() * 1000)}`;
@@ -35,7 +35,7 @@ const PopupProvider = (props) => {
     const { content } = param;
     const popup = refPopup.current;
     _clearTimeoutPopup();
-    onShowing();
+    onShow();
     _renderContent({ content });
     popup.classList.remove('popup-hidden');
     popup.classList.add('popup-showing');
@@ -43,7 +43,7 @@ const PopupProvider = (props) => {
   const _hidingContent = (duration) => {
     const popup = refPopup.current;
     _clearTimeoutPopup();
-    onHiding();
+    onHide();
     popup.classList.remove('popup-showing');
     timeoutPopup = setTimeout(function countDown() {
       popup.classList.add('popup-hidden');
@@ -55,6 +55,7 @@ const PopupProvider = (props) => {
     const { content } = param;
     const popup = refPopup.current;
     if (popup.classList.contains('popup-showing')) {
+      onShow();
       _renderContent({ content });
     } else {
       _showingContent({ content });
@@ -64,6 +65,7 @@ const PopupProvider = (props) => {
     const { duration = defaultTransitionDuration } = param;
     const popup = refPopup.current;
     if (popup.classList.contains('popup-hidden')) {
+      onHide();
       _clearContent();
     } else {
       _hidingContent(duration);

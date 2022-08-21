@@ -1,3 +1,9 @@
+## v1.1.0
+
+> Aug, 21, 2022
+
+- **Minor**: Rename onShowing & onHiding to onShow & onHide.
+
 ## v1.0.1
 
 > Aug, 21, 2022
