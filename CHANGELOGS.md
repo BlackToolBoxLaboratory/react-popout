@@ -1,3 +1,9 @@
+## v1.2.0
+
+> Aug, 22, 2022
+
+- **Minor**: Add persistent and onMaskClick.
+
 ## v1.1.0
 
 > Aug, 21, 2022

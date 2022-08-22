@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { render } from 'react-dom';
 
 import PopupContext from './PopupContext.jsx';
@@ -10,10 +10,13 @@ const PopupProvider = (props) => {
   const {
     children,
     defaultTransitionDuration = TRANSITION_DURATION,
-    onShow = () => {},
-    onHide = () => {},
+    defaultPersistent = false,
+    onShow = () => { },
+    onHide = () => { },
+    onMaskClick = () => { },
   } = props;
   const refPopup = useRef();
+  const [isPersistent, setPersistent] = useState(defaultPersistent);
   const id = `popup_${Date.now()}_${Math.ceil(Math.random() * 1000)}`;
   let timeoutPopup;
 
@@ -26,10 +29,14 @@ const PopupProvider = (props) => {
 
   const _renderContent = (data) => {
     const { content } = data;
-    render(<PopupContent>{content}</PopupContent>, document.getElementById(id));
+    if (document.getElementById(id)) {
+      render(<PopupContent>{content}</PopupContent>, document.getElementById(id));
+    }
   };
   const _clearContent = () => {
-    render(<PopupContent />, document.getElementById(id));
+    if (document.getElementById(id)) {
+      render(<PopupContent />, document.getElementById(id));
+    }
   };
   const _showingContent = (param) => {
     const { content } = param;
@@ -52,8 +59,11 @@ const PopupProvider = (props) => {
   };
 
   const _showContent = (param = {}) => {
-    const { content } = param;
+    const { content, persistent = defaultPersistent } = param;
     const popup = refPopup.current;
+    if (persistent !== isPersistent) {
+      setPersistent(persistent);
+    }
     if (popup.classList.contains('popup-showing')) {
       onShow();
       _renderContent({ content });
@@ -71,11 +81,17 @@ const PopupProvider = (props) => {
       _hidingContent(duration);
     }
   };
+  const _clickMask = () => {
+    if (!isPersistent) {
+      _hideContent();
+    }
+    onMaskClick();
+  };
 
   return (
     <PopupContext.Provider value={{ show : _showContent, hide : _hideContent }}>
       <div className="btb-react-popup popup-hidden" ref={refPopup}>
-        <div className="popup_mask" />
+        <div className="popup_mask" onClick={_clickMask} />
         <div id={id} className="popup_container" />
       </div>
       {children}
